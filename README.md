@@ -4,6 +4,10 @@
 ## 소켓 통신
 + TCP/IP 통신 과정
 	+ <img src="./readme_img/tcp_ip.png" width="50%" height="50%"/>
+	+ server
+		+ <img src="./readme_img/server.png" width="50%" height="50%"/>
+	+ client
+		+ <img src="./readme_img/client.png" width="50%" height="50%"/>
 + 주요 사용 함수
 	1. socket(int domain, int type, int protocol)
 		+ 소켓을 만드는데 바로 이 함수를 사용합니다. 소켓 역시 파일로 다루어지기 때문에 반환값은 파일디스크립터입니다. 만약 소켓을 여는데 실패했다면 -1을 리턴합니다.
