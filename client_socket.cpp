@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#define BUFFER_SIZE 30
+#define BUFFER_SIZE 1024
 
 void error_handling(char *message);
 
@@ -21,9 +21,9 @@ int main(int argc, char **argv)
 
 	struct sockaddr_in serv_addr;
 
-	if (argc!=3)
+	if (argc!=4)
 	{
-		std::cout << "error" << std::endl;
+		std::cout << "usage: ./<client> <ip address> <port> <message>" << std::endl;
 		exit(1);
 	}
 
@@ -41,16 +41,11 @@ int main(int argc, char **argv)
 	{
 		error_handling("connect error");
 	}
-	write(sock, MSG1, strlen(MSG1));
-	write(sock, MSG2, strlen(MSG2));
-	write(sock, MSG3, strlen(MSG3));
+	write(sock, argv[3], strlen(argv[3]));
 
-	for (int i = 0; i < 3; i++)
-	{
-		str_len = read(sock, message, BUFFER_SIZE);
-		message[str_len] = 0;
-		std::cout << "서버로부터 전송된 메시지: " << message << std::endl;
-	}
+	str_len = read(sock, message, BUFFER_SIZE);
+	message[str_len] = 0;
+	std::cout << "서버로부터 전송된 메시지: " << message << std::endl;
 
 	close(sock);
 	return 0;

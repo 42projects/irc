@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 1024
 
 void error_handling(char *message);
 int main(int argc, char **argv)
@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 
 	if (argc!=2)
 	{
-		std::cout << "argument error" << std::endl;
+		std::cout << "usage: ./<server> <port>" << std::endl;
 		exit(1);
 	}
 
