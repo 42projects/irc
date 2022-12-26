@@ -33,3 +33,7 @@
 		+ buffer를 소켓 파일 디스크립터인 fd로 전송합니다. 보낸 바이트수를 반환하며 실패시 -1을 반환합니다.
 	7. recv(int fd, void* buffer, size_t n, int flags)
 		+ send함수와 사용법이 거의 비슷합니다. n바이트를 buffer로 읽습니다. 성공시 받은 바이트수를 반환하며 실패시 -1을 반환합니다.
+	8. inet_ntoa(struct in_addr *network_addr) ( ex) inet_ntoa(client_addr.sin_addr) )
+		+ 네트워크 주소를 숫자사이의 점을 찍는 IP주소로 network to acsii라는 뜻입니다. ip주소가 담긴 in_addr구조체는 32비트의 네트워크 주소를 갖고 있기 때문에 숫자사이에 점을 찍는 형태로 바꾸려면 이 함수를 사용합니다.
+	9. ntohs(Network-to-Host Short) ( ex) ntohs(client_addr.sin_port) )
+		+ 이것 역시 네트워크 바이트 순서가 빅 엔디안이고, 호스트의 바이트 순서가 리틀 엔디안일때 변환해야할때 사용합니다. 그 후에는 계속 recv를 통해 클라이언트에서 입력받은 메시지를 서버에서 그대로 출력해줍니다.
