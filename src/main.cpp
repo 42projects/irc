@@ -45,12 +45,12 @@ int main(int argc, char **argv)
 		return 1;
 	signal(SIGINT, sigIntHandler);
 	signal(SIGQUIT, sigQuitHandler);
-	// server = new Server(atoi(argv[1]), argv[2]);
-	// if (server->execute() < 0)
-	// {
-	// 	delete server;
-	// 	return 1;
-	// }
-	// delete server;
-	// return 0;
+	server = new Server(atoi(argv[1]), argv[2]);
+	if (server->execute() < 0)
+	{
+		delete server;
+		return 1;
+	}
+	delete server;
+	return 0;
 }
