@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "Client.hpp"
+#include "Util.hpp"
 
 class Channel;
 class Client;
