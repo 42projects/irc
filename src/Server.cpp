@@ -266,13 +266,12 @@ void Server::check_cmd(std::vector<std::string> cmd_vec, Client *client){
 
 template <class T1, class T2>
 void deleteMap(std::map<T1, T2> &map){
-	typename std::map<T1, T2>::iterator it1 = map.begin();
-	typename std::map<T1, T2>::iterator it2 = it1;
+	typename std::map<T1, T2>::iterator it = map.begin();
 
-	while (it1 != map.end())
+	while (it != map.end())
 	{
-		it1++;
-		delete it2->second;
-		it2 = it1;
+		delete it->second;
+		it->second = 0;
+		it++;
 	}
 };
