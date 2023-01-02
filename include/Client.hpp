@@ -16,7 +16,6 @@ class Client
 	public:
 		Client(int clientFd);
 		~Client();
-		bool isRegist();
 		void appendMsgBuffer(std::string msgBuffer);
 		void appendRecvBuffer(std::string recvBuffer);
 		void clearMsgBuffer();
@@ -35,8 +34,8 @@ class Client
 		std::string &getRecvBuffer();
 		std::vector<std::string> &getMyChannelList();
 		void addChannelList(std::string channelName);
-		void removeChannel(std::string serverName);
-		void removeMyChannelElement(std::vector<std::string>::iterator it);
+		void removeChannelName(std::string serverName);
+		void removeMyChannelIt(std::vector<std::string>::iterator it);
 		std::vector<std::string>::iterator findMyChannelIt(std::string item);
 	private:
 		std::string _nickName;

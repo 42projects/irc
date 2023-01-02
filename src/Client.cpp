@@ -22,9 +22,16 @@ std::vector<std::string>::iterator Client::findMyChannelIt(std::string channelNa
 	return (_myChannelList.end());
 }
 
-void Client::removeMyChannelElement(std::vector<std::string>::iterator it)
+void Client::removeMyChannelIt(std::vector<std::string>::iterator it)
 {
 	_myChannelList.erase(it);
+}
+
+void Client::removeChannelName(std::string serverName)
+{
+	std::vector<std::string>::iterator it = findMyChannelIt(serverName);
+	if (it != _myChannelList.end())
+		removeMyChannelIt(it);
 }
 
 std::vector<std::string> & Client::getMyChannelList()
