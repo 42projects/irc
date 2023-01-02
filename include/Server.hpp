@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "Client.hpp"
+#include "Util.hpp"
 
 class Channel;
 class Client;
@@ -51,7 +52,6 @@ private:
 	int sock_init();
 	void relayEvent();
 	void check_cmd(std::vector<std::string> cmd_vec, Client *client);
-
 };
 
 #endif
