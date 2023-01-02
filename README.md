@@ -87,3 +87,7 @@
 				EINVAL    : optval이나 optlen이 유효하지 않음.  
 				ENOPROTOOPT : level이 알려지지 않은 값.  
 				ENOTSOCK  : sockfd가 file descriptor이지 socket descriptor가 아님.  
+				
+
+ERROR CODE reference
+https://www.alien.net.au/irc/irc2numerics.html
