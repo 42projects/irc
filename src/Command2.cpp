@@ -18,7 +18,12 @@ void Command::privmsg(std::vector<std::string> s, Client *client)
 			if (_server->findChannel(*receiverIt) == NULL)
 				makeNumericReply(client->getClientFd(), ERR_NOSUCHCHANNEL, *receiverIt + " :No such channel");
 			else
-				channelMessage(string_join(2, s), client, _server->findChannel(*receiverIt));
+			{
+				if (client->findMyChannelIt(*receiverIt) != client->getMyChannelList().end())
+					channelMessage(string_join(2, s), client, _server->findChannel(*receiverIt));
+				else 
+					makeNumericReply(client->getClientFd(), ERR_NOSUCHCHANNEL, *receiverIt + " :Client doesn't belong to channel");
+			}
 		}
 		else
 		{
