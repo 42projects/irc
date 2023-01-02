@@ -33,7 +33,34 @@ void Command::allInChannelMsg(int target, std::string channelName, std::string c
 
 void Command::nameListMsg(int fd, std::string channelName)
 {
+	Client *tmp = _server->findClient(fd);
+	tmp->appendMsgBuffer(RPL_NAMREPLY);
+	tmp->appendMsgBuffer(" ");
+	tmp->appendMsgBuffer(tmp->getNickName());
+	tmp->appendMsgBuffer(" = " + channelName);
+
+	Channel *targetChannel = _server->findChannel(channelName);
+	std::vector<int> clientList = targetChannel->getClientFdList();
+	std::vector<int>::iterator it =clientList.begin();
+	std::string name;
+	tmp->appendMsgBuffer(" :");
+
+	for (; it < clientList.end(); it++)
+	{
+		if (targetChannel->getChannelOperator() == *it)
+			tmp->appendMsgBuffer("@");
+		name = (_server->findClient(*it)->getNickName());
+		tmp->appendMsgBuffer(name);
+		tmp->appendMsgBuffer(" ");
+	}
+	if (targetChannel->getChannelOperator() == *it)
+		tmp->appendMsgBuffer("@");
+	name = (_server->findClient(*it)->getNickName());
+	tmp->appendMsgBuffer(name);
+	tmp->appendMsgBuffer("\r\n");
 	
+	tmp->appendMsgBuffer(RPL_ENDOFNAMES);
+	tmp->appendMsgBuffer(" " + tmp->getNickName() + " " + channelName + " :End of NAMES list" + "\r\n");
 }
 
 void Command::makeNumericReply(int fd, std::string flag, std::string str)
