@@ -52,7 +52,6 @@ private:
 	int sock_init();
 	void relayEvent();
 	void check_cmd(std::vector<std::string> cmd_vec, Client *client);
-
 };
 
 #endif

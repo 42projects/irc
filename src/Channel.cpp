@@ -16,6 +16,8 @@ void Channel::setChannelOperator(int fd)
 	return ;
 }
 
+std::string Channel::getChannelName() { return (_channelName); };
+
 std::vector<int> Channel::getClientFdList()
 {
 	return _channelClientFdList;

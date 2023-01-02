@@ -12,7 +12,13 @@ Server::Server(int port, std::string password) : _pollRet(0), _maxClient(0), _po
 
 Server::~Server()
 {
-
+	std::cout << "server destructor called\n";
+	std::map<int, Client *>::iterator it = _clientList.begin();
+	for(; it != _clientList.end(); it++){
+		close(it->first);
+	}
+	deleteMap(_clientList);
+	deleteMap(_channelList);
 }
 
 int Server::execute()
@@ -36,6 +42,64 @@ int Server::execute()
 	}
 	close(_serverSocketFd);
 	return (0);
+}
+
+std::map<int, Client *> &Server::getClientList() {
+	return _clientList;
+}
+
+std::map<std::string, Channel *> &Server::getChannelList() {
+	return _channelList;
+}
+
+std::string Server::getPass()
+{
+	return _password;
+}
+
+Client* Server::findClient(int fd) {
+	std::map<int, Client *>::iterator it;
+	if ((it = _clientList.find(fd)) != _clientList.end())
+		return it->second;
+	return NULL;
+}
+
+Client* Server::findClient(std::string nick) {
+	std::map<int, Client *>::iterator it = _clientList.begin();
+	for (; it != _clientList.end(); it++)
+	{
+		if (it->second->getNickName() == nick)
+			return it->second;
+	}
+	return NULL;
+};
+
+Channel* Server::findChannel(std::string name) {
+	if (_channelList.find(name) == _channelList.end())
+		return NULL;
+	return _channelList.find(name)->second;
+}
+
+void Server::addChannelList(std::string channelName, int fd)
+{
+	_channelList.insert(std::pair<std::string, Channel *>(channelName, new Channel(channelName, fd)));
+}
+
+void Server::removeUnconnectClient(int fd)
+{
+	Client *tmp = findClient(fd);
+
+	std::string str = tmp->getMsgBuffer();
+	send(fd, str.c_str(), str.length(), 0);
+
+	std::cout <<"----- in removeclient sendMsg to <" << fd << "> -------\n";
+	std::cout << str;
+	std::cout << "ㄴ--------------------------\n" << std::endl;
+	str.clear();
+	tmp->clearMsgBuffer();
+	getClientList().erase(fd);
+	close(fd);
+	delete tmp;
 }
 
 int Server::pollingEvent()
@@ -118,39 +182,39 @@ void Server::relayEvent()
 			}
 			else
 			{
-				// Client * tmp = (_clientList.find(_pollClient[i].fd))->second;
-				// tmp->appendRecvBuffer(std::string(buf));
-				// std::cout << C_YLLW << "---- recvMsgBuf --- \n";
-				// std::cout << "[" << tmp->getRecvBuffer() << "]" << std::endl;
-				// std::cout << "pollfd : " << _pollClient[i].fd << std::endl;
-				// std::cout << "ㄴ--- endRecvMsgBuf ---\n" << C_NRML << std::endl;
-				// if (tmp->getRecvBuffer().find("\r\n") == std::string::npos && tmp->getRecvBuffer().find("\n") == std::string::npos)
-				// {
-				// 	continue;
-				// }
-				// std::vector<std::string> cmd;
-				// if (tmp->getRecvBuffer().find("\r\n") != std::string::npos)
-				// 	cmd = split(tmp->getRecvBuffer(), "\r\n");
-				// else if (tmp->getRecvBuffer().find("\n") != std::string::npos)
-				// 	cmd = split(tmp->getRecvBuffer(), "\n");
-				// if (cmd[0] == "")
-				// 	continue;
-				// print_stringVector(cmd);
-				// if (!(tmp->getRegist() & REGI))
-				// {
-				// 	_command.welcome(cmd, (_clientList.find(_pollClient[i].fd))->second, _clientList);
-				// }
-				// else
-				// {
-				// 	std::vector<std::string>::iterator cmd_it = cmd.begin();
-				// 	while (cmd_it != cmd.end())
-				// 	{
-				// 		std::vector<std::string> result = split(*cmd_it, " ");
-				// 		check_cmd(result, tmp);
-				// 		cmd_it++;
-				// 	}
-				// 	tmp->getRecvBuffer().clear();
-				// }
+				Client * tmp = (_clientList.find(_pollClient[i].fd))->second;
+				tmp->appendRecvBuffer(std::string(buf));
+				std::cout << "---- recvMsgBuf --- \n";
+				std::cout << "[" << tmp->getRecvBuffer() << "]" << std::endl;
+				std::cout << "pollfd : " << _pollClient[i].fd << std::endl;
+				std::cout << "ㄴ--- endRecvMsgBuf ---\n" << std::endl;
+				if (tmp->getRecvBuffer().find("\r\n") == std::string::npos && tmp->getRecvBuffer().find("\n") == std::string::npos)
+				{
+					continue;
+				}
+				std::vector<std::string> cmd;
+				if (tmp->getRecvBuffer().find("\r\n") != std::string::npos)
+					cmd = ft_split(tmp->getRecvBuffer(), "\r\n");
+				else if (tmp->getRecvBuffer().find("\n") != std::string::npos)
+					cmd = ft_split(tmp->getRecvBuffer(), "\n");
+				if (cmd[0] == "")
+					continue;
+				printStringVector(cmd);
+				if (!(tmp->getRegist() & REGI))
+				{
+					// _command.welcome(cmd, (_clientList.find(_pollClient[i].fd))->second, _clientList);
+				}
+				else
+				{
+					std::vector<std::string>::iterator cmd_it = cmd.begin();
+					while (cmd_it != cmd.end())
+					{
+						std::vector<std::string> result = ft_split(*cmd_it, " ");
+						check_cmd(result, tmp);
+						cmd_it++;
+					}
+					tmp->getRecvBuffer().clear();
+				}
 			}
 		}
 		else if (_pollClient[i].revents & POLLERR)
@@ -162,15 +226,53 @@ void Server::relayEvent()
 	std::map<int, Client *>::iterator it = _clientList.begin();
 	for (; it != _clientList.end(); it++)
 	{
-		// if (it->second->getMsgBuffer().empty() == false)
-		// {
-		// 	std::string str = it->second->getMsgBuffer();
-		// 	send(it->first, str.c_str(), str.length(), 0);
-		// 	std::cout << C_BLUE <<"----- sendMsg to <" << it->first << "> -------\n";
-		// 	std::cout << str;
-		// 	std::cout << "ㄴ--------------------------\n" << std::endl << C_NRML;
-		// 	str.clear();
-		// 	it->second->clearMsgBuffer();
-		// }
+		if (it->second->getMsgBuffer().empty() == false)
+		{
+			std::string str = it->second->getMsgBuffer();
+			send(it->first, str.c_str(), str.length(), 0);
+			std::cout << "----- sendMsg to <" << it->first << "> -------\n";
+			std::cout << str;
+			std::cout << "ㄴ--------------------------\n" << std::endl;
+			str.clear();
+			it->second->clearMsgBuffer();
+		}
 	}
 }
+
+void Server::check_cmd(std::vector<std::string> cmd_vec, Client *client){
+	// if (cmd_vec[0] == "NICK")
+	// 	_command.nick(cmd_vec, client);
+	// else if (cmd_vec[0] == "JOIN")
+	// 	_command.join(cmd_vec, client);
+	// else if (cmd_vec[0] == "KICK")
+	// 	_command.kick(cmd_vec, client);
+	// else if (cmd_vec[0] == "PRIVMSG")
+	// 	_command.privmsg(cmd_vec, client);
+	// else if (cmd_vec[0] == "NOTICE")
+	// 	_command.notice(cmd_vec, client);
+	// else if (cmd_vec[0] == "PING")
+	// 	_command.pong(cmd_vec, client);
+	// else if (cmd_vec[0] == "PART")
+	// 	_command.part(cmd_vec, client);
+	// else if (cmd_vec[0] == "QUIT")
+	// 	_command.quit(cmd_vec, client);
+	// else if (cmd_vec[0] == "PASS" || cmd_vec[0] == "USER")
+	// 	_command.alreadyRegist(client);
+	// else if (cmd_vec[0] == "MODE" || cmd_vec[0] == "WHOIS")
+	// 	;
+	// else
+	// 	std::cout << cmd_vec[0] << ": undefined cmd\n\n";
+}
+
+template <class T1, class T2>
+void deleteMap(std::map<T1, T2> &map){
+	typename std::map<T1, T2>::iterator it1 = map.begin();
+	typename std::map<T1, T2>::iterator it2 = it1;
+
+	while (it1 != map.end())
+	{
+		it1++;
+		delete it2->second;
+		it2 = it1;
+	}
+};
