@@ -89,5 +89,5 @@
 				ENOTSOCK  : sockfd가 file descriptor이지 socket descriptor가 아님.  
 				
 
-ERROR CODE reference
+- ERROR CODE reference
 https://www.alien.net.au/irc/irc2numerics.html
