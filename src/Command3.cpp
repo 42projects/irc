@@ -1,6 +1,5 @@
 #include "../include/Server.hpp"
 #include "../include/Command.hpp"
-#include "../include/Define.hpp"
 
 //새로 들어온 유저를 환영하는 메시지를 보낸다. 
 void Command::welcomeMsg(int fd, std::string flag, std::string msg, std::string name)
@@ -45,7 +44,7 @@ void Command::nameListMsg(int fd, std::string channelName)
 	std::string name;
 	tmp->appendMsgBuffer(" :");
 
-	for (; it < clientList.end(); it++)
+	for (; it < clientList.end() - 1; it++)
 	{
 		if (targetChannel->getChannelOperator() == *it)
 			tmp->appendMsgBuffer("@");

@@ -1,6 +1,5 @@
-#include "../include/Server.hpp"
 #include "../include/Command.hpp"
-#include "../include/Define.hpp"
+#include "../include/Server.hpp"
 
 void Command::privmsg(std::vector<std::string> s, Client *client)
 {
