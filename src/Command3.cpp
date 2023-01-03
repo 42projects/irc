@@ -1,5 +1,5 @@
-#include "../include/Command.hpp"
 #include "../include/Server.hpp"
+#include "../include/Command.hpp"
 #include "../include/Define.hpp"
 
 //새로 들어온 유저를 환영하는 메시지를 보낸다. 
@@ -94,6 +94,7 @@ void Command::welcome(std::vector<std::string> cmd, Client *client, std::map<int
 
 	while (it != cmd.end())
 	{
+		std::cout << temp[1] << "@@@@"<< _server->getPass() << std::endl;
 		//PASS -> NICK -> USER 순서로 입력이 들어올 때만 회원가입이 정상적으로 진행된다.
 		std::vector<std::string> temp = ft_split(*it, " ");
 		if (temp[0] == "PASS")
@@ -109,7 +110,9 @@ void Command::welcome(std::vector<std::string> cmd, Client *client, std::map<int
 				return ;
 			}
 			if (temp[1] == _server->getPass())
+			{
 				client->setRegist(PASS);
+			}
 			else
 			{
 				makeNumericReply(client->getClientFd(), ERR_PASSWDMISMATCH, ":Wrong Password");
@@ -165,4 +168,9 @@ void Command::welcome(std::vector<std::string> cmd, Client *client, std::map<int
 		welcomeMsg(client->getClientFd(), RPL_WELCOME, ":Welcome to Internet Relay Network", client->getNickName());
 		client->setRegist(REGI);
 	}
+}
+
+void Command::alreadyRegist(Client *client)
+{
+	makeNumericReply(client->getClientFd(), ERR_ALREADYREGISTRED, ":You are already registed");
 }

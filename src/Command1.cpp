@@ -1,4 +1,6 @@
+#include "../include/Server.hpp"
 #include "../include/Command.hpp"
+#include "../include/Define.hpp"
 
 Command::Command(Server *server)
 {
