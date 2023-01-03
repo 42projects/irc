@@ -11,8 +11,10 @@
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
+#include "Channel.hpp"
 #include "Client.hpp"
 #include "Util.hpp"
+#include "Command.hpp"
 
 class Channel;
 class Client;
@@ -46,7 +48,7 @@ private:
 	pollfd _pollClient[OPEN_MAX];
 	std::map<std::string, Channel *> _channelList;
 	std::map<int, Client *> _clientList;
-	// Command _command;
+	Command _command;
 	
 	int pollingEvent();
 	int sock_init();

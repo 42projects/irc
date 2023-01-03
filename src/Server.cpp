@@ -1,6 +1,6 @@
 #include "../include/Server.hpp"
 
-Server::Server(int port, std::string password) : _pollRet(0), _maxClient(0), _port(port), _password(password)
+Server::Server(int port, std::string password) : _port(port), _pollRet(0), _maxClient(0), _password(password), _command(this)
 {
 	sock_init();
 	_pollClient[0].fd = _serverSocketFd;
@@ -9,6 +9,18 @@ Server::Server(int port, std::string password) : _pollRet(0), _maxClient(0), _po
 		_pollClient[i].fd = -1;
 	}
 }
+
+template <class T1, class T2>
+void deleteMap(std::map<T1, T2> &map){
+	typename std::map<T1, T2>::iterator it = map.begin();
+
+	while (it != map.end())
+	{
+		delete it->second;
+		it->second = 0;
+		it++;
+	}
+};
 
 Server::~Server()
 {
@@ -177,7 +189,7 @@ void Server::relayEvent()
 				std::vector<std::string> tmp_vec;
 				tmp_vec.push_back("QUIT");
 				tmp_vec.push_back(":lost connection");
-				// _command.quit(tmp_vec, findClient(_pollClient[i].fd));
+				_command.quit(tmp_vec, findClient(_pollClient[i].fd));
 				_pollClient[i].fd = -1;
 			}
 			else
@@ -202,7 +214,7 @@ void Server::relayEvent()
 				printStringVector(cmd);
 				if (!(tmp->getRegist() & REGI))
 				{
-					// _command.welcome(cmd, (_clientList.find(_pollClient[i].fd))->second, _clientList);
+					_command.welcome(cmd, (_clientList.find(_pollClient[i].fd))->second, _clientList);
 				}
 				else
 				{
@@ -240,38 +252,26 @@ void Server::relayEvent()
 }
 
 void Server::check_cmd(std::vector<std::string> cmd_vec, Client *client){
-	// if (cmd_vec[0] == "NICK")
-	// 	_command.nick(cmd_vec, client);
-	// else if (cmd_vec[0] == "JOIN")
-	// 	_command.join(cmd_vec, client);
-	// else if (cmd_vec[0] == "KICK")
-	// 	_command.kick(cmd_vec, client);
-	// else if (cmd_vec[0] == "PRIVMSG")
-	// 	_command.privmsg(cmd_vec, client);
-	// else if (cmd_vec[0] == "NOTICE")
-	// 	_command.notice(cmd_vec, client);
-	// else if (cmd_vec[0] == "PING")
-	// 	_command.pong(cmd_vec, client);
-	// else if (cmd_vec[0] == "PART")
-	// 	_command.part(cmd_vec, client);
-	// else if (cmd_vec[0] == "QUIT")
-	// 	_command.quit(cmd_vec, client);
-	// else if (cmd_vec[0] == "PASS" || cmd_vec[0] == "USER")
-	// 	_command.alreadyRegist(client);
-	// else if (cmd_vec[0] == "MODE" || cmd_vec[0] == "WHOIS")
-	// 	;
-	// else
-	// 	std::cout << cmd_vec[0] << ": undefined cmd\n\n";
+	if (cmd_vec[0] == "NICK")
+		_command.nick(cmd_vec, client);
+	else if (cmd_vec[0] == "JOIN")
+		_command.join(cmd_vec, client);
+	else if (cmd_vec[0] == "KICK")
+		_command.kick(cmd_vec, client);
+	else if (cmd_vec[0] == "PRIVMSG")
+		_command.privmsg(cmd_vec, client);
+	else if (cmd_vec[0] == "NOTICE")
+		_command.notice(cmd_vec, client);
+	else if (cmd_vec[0] == "PING")
+		_command.pong(cmd_vec, client);
+	else if (cmd_vec[0] == "PART")
+		_command.part(cmd_vec, client);
+	else if (cmd_vec[0] == "QUIT")
+		_command.quit(cmd_vec, client);
+	else if (cmd_vec[0] == "PASS" || cmd_vec[0] == "USER")
+		_command.alreadyRegist(client);
+	else if (cmd_vec[0] == "MODE" || cmd_vec[0] == "WHOIS")
+		;
+	else
+		std::cout << cmd_vec[0] << ": undefined cmd\n\n";
 }
-
-template <class T1, class T2>
-void deleteMap(std::map<T1, T2> &map){
-	typename std::map<T1, T2>::iterator it = map.begin();
-
-	while (it != map.end())
-	{
-		delete it->second;
-		it->second = 0;
-		it++;
-	}
-};
