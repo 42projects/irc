@@ -18,6 +18,7 @@
 
 class Channel;
 class Client;
+class Command;
 
 class Server
 {

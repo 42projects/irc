@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "../include/Server.hpp"
+#include "Server.hpp"
 #include <signal.h>
 
 Server *server;

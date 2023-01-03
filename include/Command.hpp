@@ -15,7 +15,6 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include "Server.hpp"
 #include "Define.hpp"
 
 class Server;

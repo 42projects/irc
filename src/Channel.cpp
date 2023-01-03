@@ -1,4 +1,4 @@
-#include "../include/Channel.hpp"
+#include "Channel.hpp"
 #include <iostream>
 
 Channel::Channel(std::string channelName, int fd) : _operator(fd), _channelName(channelName){};

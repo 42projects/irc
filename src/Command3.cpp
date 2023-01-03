@@ -1,5 +1,5 @@
-#include "../include/Server.hpp"
-#include "../include/Command.hpp"
+#include "Server.hpp"
+#include "Command.hpp"
 
 //새로 들어온 유저를 환영하는 메시지를 보낸다. 
 void Command::welcomeMsg(int fd, std::string flag, std::string msg, std::string name)

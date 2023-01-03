@@ -1,7 +1,7 @@
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 NAME = ircserv
-
+INCDIR	= -I ./include
 SOURCES_DIR = src/
 
 SOURCES_NAME = main.cpp\
@@ -22,8 +22,8 @@ all: $(NAME)
 $(NAME): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJECTS)
 
-%.o: %.c
-	$(CXX) $(CXXFLAGS) -c $<
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(INCDIR) -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS)
