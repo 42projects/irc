@@ -94,7 +94,6 @@ void Command::welcome(std::vector<std::string> cmd, Client *client, std::map<int
 
 	while (it != cmd.end())
 	{
-		std::cout << temp[1] << "@@@@"<< _server->getPass() << std::endl;
 		//PASS -> NICK -> USER 순서로 입력이 들어올 때만 회원가입이 정상적으로 진행된다.
 		std::vector<std::string> temp = ft_split(*it, " ");
 		if (temp[0] == "PASS")
