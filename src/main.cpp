@@ -45,6 +45,11 @@ int main(int argc, char **argv)
 		return 1;
 	signal(SIGINT, sigIntHandler);
 	signal(SIGQUIT, sigQuitHandler);
+	if (atoi(argv[1]) < 0 || atoi(argv[1]) > 65535)
+	{
+		std::cout << "Port Range Error\n";
+		return 1;
+	}
 	server = new Server(atoi(argv[1]), argv[2]);
 	if (server->execute() < 0)
 	{
