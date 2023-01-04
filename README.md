@@ -87,7 +87,62 @@
 				EINVAL    : optval이나 optlen이 유효하지 않음.  
 				ENOPROTOOPT : level이 알려지지 않은 값.  
 				ENOTSOCK  : sockfd가 file descriptor이지 socket descriptor가 아님.  
-				
 
-- ERROR CODE reference  
-https://www.alien.net.au/irc/irc2numerics.html
+## 다중 입출력(multiplexing I/O)
++ 한 프로세스가 여러 파일을 관리하는 기법
+	+ 하나의 서버에서 여러 소켓(IP/Port를 가진 파일)을 관리하여 여러 클라이언트가 접속할 수 있게 하는 기법이다.
+	+ <img src="./readme_img/multiplexing.png" width="50%" height="50%"/>
+	+ 여러 소켓의 I/O 처리를 하게되면, 하나의 I/O 요청을 하는 동안 프로그램이 무한정 대기에 빠질 수 있다. select(), poll() 등의 함수를 통해 데이터가 준비 된 경우에만 I/O의 처리를 할 수 있게하여 프로그램이 대기없이 동작하도록 할 수 있다.
+	+ 주의할 점
+		+ 데이터가 체크섬 실패 등의 이유로 폐기되는 상황일 때, select()나 poll()이 어떤 FD에 데이터가 있으니 읽으라고 알려와서 읽었다가 socket이 block되는 상황이 발생할 수 있다. 이런 상황을 방지하기 위해 socket을 Non-blocking으로 구성하여 EWOULDBLOCK error만 return하고 넘어가게끔 설계하여 안전성을 향상 시킬 수 있다.
+
++ int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+	+ poll(2)함수는 select(2)함수와 비슷한 기능을 하는 함수로 socket / pipe 등에서 동시에 여러개의 I/O를 대기할 경우에 특정한 fd에 blocking되지 않고 I/O를 할 수 있는 상태인 지를 모니터링하여 I/O 가능한 상태의 fd인지를 검사하는 함수입니다.  
+	poll(2)함수는 일반파일에서는 사용할 일은 거의 없으며, 주로 socket통신이나 pipe등에서 사용합니다.
+	+ 인자
+		+ fds
+			+ 모니터링할 fd와 event  종류를 설정하고 poll이 반환되었을 때에 그 결과값을 저장하는 구조체
+			```cpp
+				struct pollfd {
+					int   fd;         /* file descriptor */
+					short events;     /* requested events */
+					short revents;    /* returned events */
+				};
+			```
+			fd : file descriptor  
+			events : monitoring할 event 종류로 아래의 상수로 Bit Or 연산으로 여러가지 설정할 수 있습니다.  
+			revents : 반환 event로 events에서 설정한 값 중에 일치하는 값과 추가적인 몇가지 event가 설정됩니다.  
+			  
+			[Event 상수 값]  
+			POLLIN : 읽을 데이터가 있습니다.  (events / revents)  
+			POLLPRI : 긴급 데이터(Out-of-band Data)를 읽을 것이 있습니다. (events / revents)  
+			POLLOUT : 바로 쓸 수 있는 상태입니다. (events / revents)  
+			POLLWRBAND : 긴급 데이터(Out-of-band data)를 쓸 수 있습니다. (events / revents);  
+			POLLERR : 주어진 file descriptor에 오류가 있습니다. (revents only)  
+			POLLHUP : 주어진 file descriptor에서 event가 지체되고 있습니다. (revents only)  
+			POLLNVAL : 주어진 file descriptor가 유효하지 않습니다. (revents only)  
+		+ nfds
+			+ 설정된 fd의 개수
+		+ timeout
+			+ milliseconds(1/1000초) 단위의 timeout을 설정
+			+ 0을 설정하면 poll(2)함수는 바로 return 됩니다.
+			+ -값이면 타임아웃이 무한대로 설정됩니다. 즉, event가 발생할 때까지 무한 대기합니다.
+	+ Return
+		+ 1 이상
+			+  Event가 발생한 fd의 갯수
+		+ 0
+			+ timeout이 발생하였습니다.
+		+ -1
+			+ 오류가 발생하였으며, 상세한 오류내용은 errno에 설정됩니다.  
+			EFAULT : fds 변수가 프로그램의 주소  공간에 있지 않습니다.  
+			EINTR : signal이 발생하였습니다.  
+			EINVAL : nfds 값이 RLIMIT_NOFILE를 초과하였습니다.  
+			ENOMEM : file descriptor table 메모리 할당을 위한 공간이 없습니다.  
+
+## Reference
++ RFC1459
+	+ https://datatracker.ietf.org/doc/html/rfc1459
++ ERROR CODE
+	+ https://www.alien.net.au/irc/irc2numerics.html
++ 소켓 연결 예제
+	+ https://blog.naver.com/PostView.naver?blogId=handong217&logNo=222137292740&parentCategoryNo=&categoryNo=1&viewDate=&isShowPopularPosts=false&from=postView
